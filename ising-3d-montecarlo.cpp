@@ -13,8 +13,9 @@ const Complex I(0.0, 1.0);
 #define Ny 10
 #define Nz 2
 
-double energy(double sz[Nx][Ny][Nz]);
+double energy(double sz[Nx][Ny][Nz], double Jr[Nx][Ny][Nz][3]);
 double sz[Nx][Ny][Nz];
+double Jr[Nx][Ny][Nz][3];
 
 int main()
 {
@@ -30,38 +31,58 @@ int main()
   ofstream fout3("result3.txt");
   ofstream fout4("result4.txt");
   ofstream fout5("result5.txt");
-
+  ofstream fout6("result6.txt");
   std::mt19937 generator;
-  generator.seed(time(NULL));
+  generator.seed(0);
   std::normal_distribution<double> nordistribution(0.0, 0.030);
   std::uniform_real_distribution<double> unidistribution(0.0, 1.0);
 
-    for (int i=0; i<Nx; i++)
-      {
-        for (int j=0; j<Ny; j++)
-          {
-            for (int k=0; k<Nz; k++)
-              {
+  for (int i=0; i<Nx; i++)
+    {
+      for (int j=0; j<Ny; j++)
+        {
+          for (int k=0; k<Nz; k++)
+            {
+              for (int l=0; l<3; l++){
                 random=nordistribution(generator);
-                if ( random >0.0)
-                  {
-                    sz[i][j][k]=1.0;
-                  }
-                else {
-                  sz[i][j][k]=-1.0;
-                }
-                fout2 << i << ' ' << j << ' ' << k << ' ' << sz[i][j][k] << endl;
+                Jr[i][j][k][l] = random/abs(random);
+                fout6 << i << ' ' << j << ' ' << k << ' ' << l << ' '<< Jr[i][j][k][l] << endl;
               }
-          }
-      }
+            }
+        }
+    }
 
-  ene = energy(sz);
+  //std::mt19937 generator;
+  generator.seed(time(NULL));
+  //std::normal_distribution<double> nordistribution(0.0, 0.030);
+  //std::uniform_real_distribution<double> unidistribution(0.0, 1.0);
+
+  for (int i=0; i<Nx; i++)
+    {
+      for (int j=0; j<Ny; j++)
+        {
+          for (int k=0; k<Nz; k++)
+            {
+              random=nordistribution(generator);
+              if ( random >0.0)
+                {
+                  sz[i][j][k]=1.0;
+                }
+              else {
+                sz[i][j][k]=-1.0;
+              }
+              fout2 << i << ' ' << j << ' ' << k << ' ' << sz[i][j][k] << endl;
+            }
+        }
+    }
+
+  ene = energy(sz, Jr);
   fout1 << 0 << ' ' << ene << endl;
 
-  for (int l=0; l<1000; l++)
+  for (int l=0; l<100; l++)
     {
 
-      temp=10.000*exp(-l/100);
+      temp=10.000*exp(-l/10);
 
       for (int i=0; i<Nx; i++)
         {
@@ -69,9 +90,9 @@ int main()
             {
               for (int k=0; k<Nz; k++)
                 {
-                  ene1=energy(sz);
+                  ene1=energy(sz, Jr);
                   sz[i][j][k]=-1.0*sz[i][j][k];
-                  ene2=energy(sz);
+                  ene2=energy(sz, Jr);
 
                   fout4 << l << ' ' << ene1 << ' ' << ene2 << ' ' << ene2-ene1 << endl;
 
@@ -86,36 +107,31 @@ int main()
             }
         }
 
-      ene = energy(sz);
+      ene = energy(sz, Jr);
       fout1 << l << ' ' << ene << endl;
 
     }
 
-    for (int i=0; i<Nx; i++)
-      {
-        for (int j=0; j<Ny; j++)
-          {
-            for (int k=0; k<Nz; k++)
-              {
-                fout3 << i << ' ' << j << ' ' << k << ' ' << sz[i][j][k] << endl;
-              }
-          }
-      }
+  for (int i=0; i<Nx; i++)
+    {
+      for (int j=0; j<Ny; j++)
+        {
+          for (int k=0; k<Nz; k++)
+            {
+              fout3 << i << ' ' << j << ' ' << k << ' ' << sz[i][j][k] << endl;
+            }
+        }
+    }
 
   return 0;
 }
 
-double energy(double sz[Nx][Ny][Nz])
+double energy(double sz[Nx][Ny][Nz], double Jr[Nx][Ny][Nz][3])
 {
 
   double ene=0.0;
   double J=1.0;
   double H=1.0;
-
-  std::mt19937 generator;
-  //  generator.seed(0);
-  std::normal_distribution<double> nordistribution(0.0, 0.030);
-  std::uniform_real_distribution<double> unidistribution(0.0, 1.0);
 
   for (int i=0; i<Nx-1; i++)
     {
@@ -123,10 +139,8 @@ double energy(double sz[Nx][Ny][Nz])
         {
           for (int k=0; k<Nz; k++)
             {
-              generator.seed(i+j+k+1);
-              double  random=nordistribution(generator);
-              //cout << i << ' ' << j << ' ' << k << ' ' << random/abs(random) << endl;
-              ene=ene+J*random/abs(random)*sz[i][j][k]*sz[i+1][j][k];
+              //ene=ene+J*sz[i][j][k]*sz[i+1][j][k];
+              ene=ene+Jr[i][j][k][0]*sz[i][j][k]*sz[i+1][j][k];
             }
         }
     }
@@ -137,10 +151,8 @@ double energy(double sz[Nx][Ny][Nz])
         {
           for (int k=0; k<Nz; k++)
             {
-              generator.seed(i+j+k+2);
-              double  random=nordistribution(generator);
-              //cout << i << ' ' << j << ' ' << k << ' ' << random/abs(random) << endl;
-              ene=ene+J*random/abs(random)*sz[i][j][k]*sz[i+1][j][k];
+              //ene=ene+J*sz[i][j][k]*sz[i][j+1][k];
+              ene=ene+Jr[i][j][k][1]*sz[i][j][k]*sz[i][j+1][k];
             }
         }
     }
@@ -151,10 +163,8 @@ double energy(double sz[Nx][Ny][Nz])
         {
           for (int k=0; k<Nz-1; k++)
             {
-              generator.seed(i+j+k+3);
-              double  random=nordistribution(generator);
-              //cout << i << ' ' << j << ' ' << k << ' ' << random/abs(random) << endl;
-              ene=ene+J*random/abs(random)*sz[i][j][k]*sz[i+1][j][k];
+              //ene=ene+J*sz[i][j][k]*sz[i][j][k+1];
+              ene=ene+Jr[i][j][k][2]*sz[i][j][k]*sz[i][j][k+1];
             }
         }
     }
