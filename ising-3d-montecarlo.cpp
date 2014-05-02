@@ -112,13 +112,21 @@ double energy(double sz[Nx][Ny][Nz])
   double J=1.0;
   double H=1.0;
 
+  std::mt19937 generator;
+  //  generator.seed(0);
+  std::normal_distribution<double> nordistribution(0.0, 0.030);
+  std::uniform_real_distribution<double> unidistribution(0.0, 1.0);
+
   for (int i=0; i<Nx-1; i++)
     {
       for (int j=0; j<Ny; j++)
         {
           for (int k=0; k<Nz; k++)
             {
-              ene=ene+J*sz[i][j][k]*sz[i+1][j][k];
+              generator.seed(i+j+k+1);
+              double  random=nordistribution(generator);
+              //cout << i << ' ' << j << ' ' << k << ' ' << random/abs(random) << endl;
+              ene=ene+J*random/abs(random)*sz[i][j][k]*sz[i+1][j][k];
             }
         }
     }
@@ -129,7 +137,10 @@ double energy(double sz[Nx][Ny][Nz])
         {
           for (int k=0; k<Nz; k++)
             {
-              ene=ene+J*sz[i][j][k]*sz[i][j+1][k];
+              generator.seed(i+j+k+2);
+              double  random=nordistribution(generator);
+              //cout << i << ' ' << j << ' ' << k << ' ' << random/abs(random) << endl;
+              ene=ene+J*random/abs(random)*sz[i][j][k]*sz[i+1][j][k];
             }
         }
     }
@@ -140,7 +151,10 @@ double energy(double sz[Nx][Ny][Nz])
         {
           for (int k=0; k<Nz-1; k++)
             {
-              ene=ene+J*sz[i][j][k]*sz[i][j][k+1];
+              generator.seed(i+j+k+3);
+              double  random=nordistribution(generator);
+              //cout << i << ' ' << j << ' ' << k << ' ' << random/abs(random) << endl;
+              ene=ene+J*random/abs(random)*sz[i][j][k]*sz[i+1][j][k];
             }
         }
     }
