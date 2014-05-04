@@ -9,9 +9,9 @@
 using namespace std;
 typedef complex<double> Complex;
 const Complex I(0.0, 1.0);
-#define Nx 10
-#define Ny 10
-#define Nz 2
+#define Nx 40
+#define Ny 40
+#define Nz 3
 
 double energy(double sz[Nx][Ny][Nz], double Jr[Nx][Ny][Nz][3]);
 double sz[Nx][Ny][Nz];
@@ -29,8 +29,8 @@ int main()
   ofstream fout1("result1.txt");
   ofstream fout2("result2.txt");
   ofstream fout3("result3.txt");
-  ofstream fout4("result4.txt");
-  ofstream fout5("result5.txt");
+  //ofstream fout4("result4.txt");
+  //ofstream fout5("result5.txt");
   ofstream fout6("result6.txt");
   std::mt19937 generator;
   generator.seed(0);
@@ -50,6 +50,7 @@ int main()
               }
             }
         }
+              fout6 << endl;
     }
 
   //std::mt19937 generator;
@@ -74,15 +75,17 @@ int main()
               fout2 << i << ' ' << j << ' ' << k << ' ' << sz[i][j][k] << endl;
             }
         }
+          fout2 << endl;
     }
 
   ene = energy(sz, Jr);
   fout1 << 0 << ' ' << ene << endl;
 
-  for (int l=0; l<100; l++)
+  for (int l=0; l<10000; l++)
     {
 
-      temp=10.000*exp(-l/10);
+      temp=100.000*exp(-l*1.00/10.0);
+      cout << l << ' ' << temp << endl;
 
       for (int i=0; i<Nx; i++)
         {
@@ -94,13 +97,13 @@ int main()
                   sz[i][j][k]=-1.0*sz[i][j][k];
                   ene2=energy(sz, Jr);
 
-                  fout4 << l << ' ' << ene1 << ' ' << ene2 << ' ' << ene2-ene1 << endl;
+                  //fout4 << l << ' ' << ene1 << ' ' << ene2 << ' ' << ene2-ene1 << endl;
 
                   double uni=unidistribution(generator);
                   if (uni < 1/(1+exp(-(ene2-ene1)/1.00)))
                     //if (ene2>ene1)
                     {
-                      fout5 << uni << ' ' << 1/(1+exp((ene2-ene1)/temp)) << endl;
+                      //fout5 << uni << ' ' << 1/(1+exp((ene2-ene1)/temp)) << endl;
                       sz[i][j][k]=-1.0*sz[i][j][k];
                     }
                 }
@@ -121,6 +124,7 @@ int main()
               fout3 << i << ' ' << j << ' ' << k << ' ' << sz[i][j][k] << endl;
             }
         }
+          fout3 << endl;
     }
 
   return 0;
