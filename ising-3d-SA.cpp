@@ -81,10 +81,11 @@ int main()
   ene = energy(sz, Jr);
   fout1 << 0 << ' ' << ene << endl;
 
-  for (int l=0; l<10000; l++)
+  for (int l=0; l<1000; l++)
     {
 
-      temp=100.000*exp(-l*1.00/10.0);
+      //temp=100.000*exp(-l*1.00/10.0);
+      temp=10.000*(1000-l)/1000;
       cout << l << ' ' << temp << endl;
 
       for (int i=0; i<Nx; i++)
