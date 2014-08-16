@@ -141,7 +141,7 @@ double energy(double sz[Nx][Ny][Nz], double Jr[Nx][Ny][Nz][3])
 {
 
   double ene=0.0;
-  double J=1.0;
+  // double J=1.0;
   double H=1.0;
 
   for (int i=0; i<Nx-1; i++)
